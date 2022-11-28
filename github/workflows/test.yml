@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/setup-go@v3
-    - run: ge test ./... -coverprofile=coverage.out
+      with:
+        go-version: '>=1.18'
+    - uses: actions/checkout@v3
+    - run: go test ./... -coverprofile=coverage.out
     - name: report coverage
       uses: k1LoW/octocov-action@v0
