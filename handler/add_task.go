@@ -26,7 +26,7 @@ func (at *AddTask) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	err := validator.New().Struct(b)
 	if err != nil {
-		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusInternalServerError)
+		RespondJSON(ctx, w, &ErrResponse{Message: err.Error()}, http.StatusBadRequest)
 		return
 	}
 
