@@ -2,9 +2,12 @@ package store
 
 import (
 	"context"
+	"regexp"
 	"testing"
 
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/go-cmp/cmp"
+	"github.com/jmoiron/sqlx"
 	"github.com/rikcy2122/go_todo_app/clock"
 	"github.com/rikcy2122/go_todo_app/entity"
 	"github.com/rikcy2122/go_todo_app/testutil"
@@ -82,36 +85,36 @@ func TestRepository_ListTasks(t *testing.T) {
 	}
 }
 
-// func TestRepository_AddTask(t *testing.T) {
-// 	t.Parallel()
-// 	ctx := context.Background()
+func TestRepository_AddTask(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
 
-// 	c := clock.FixedClocker{}
-// 	var wantID int64 = 20
-// 	okTask := &entity.Task{
-// 		Title:    "ok task",
-// 		Status:   "todo",
-// 		Created:  c.Now(),
-// 		Modified: c.Now(),
-// 	}
+	c := clock.FixedClocker{}
+	var wantID int64 = 20
+	okTask := &entity.Task{
+		Title:    "ok task",
+		Status:   "todo",
+		Created:  c.Now(),
+		Modified: c.Now(),
+	}
 
-// 	db, mock, err := sqlmock.New()
-// 	if err != nil {
-// 		t.Fatal(err)
-// 	}
-// 	t.Cleanup(func() { _ = db.Close() })
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = db.Close() })
 
-// 	mock.ExpectExec(
-// 		`INSERT INTO task (title, status, created, modified) VALUES(?, ?, ?, ?)`,
-// 	).WithArgs(
-// 		okTask.Title, okTask.Status, c.Now, c.Now,
-// 	).WillReturnResult(
-// 		sqlmock.NewResult(wantID, 1),
-// 	)
+	mock.ExpectExec(
+		regexp.QuoteMeta(`INSERT INTO task (title, status, created, modified) VALUES(?, ?, ?, ?);`),
+	).WithArgs(
+		okTask.Title, okTask.Status, c.Now, c.Now,
+	).WillReturnResult(
+		sqlmock.NewResult(wantID, 1),
+	)
 
-// 	xdb := sqlx.NewDb(db, "mysql")
-// 	r := &Repository{Clocker: c}
-// 	if err := r.AddTask(ctx, xdb, okTask); err != nil {
-// 		t.Errorf("want no error, but got %v", err)
-// 	}
-// }
+	xdb := sqlx.NewDb(db, "mysql")
+	r := &Repository{Clocker: c}
+	if err := r.AddTask(ctx, xdb, okTask); err != nil {
+		t.Errorf("want no error, but got %v", err)
+	}
+}
