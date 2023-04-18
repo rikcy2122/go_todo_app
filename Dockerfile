@@ -1,5 +1,5 @@
 # デプロイ用コンテナに含めるバイナリを作成するコンテナ
-FROM golang:1.18.2-bullseye as deploy-builder
+FROM golang:1.20.3-bullseye as deploy-builder
 
 WORKDIR /app
 
@@ -23,7 +23,7 @@ CMD ["./app"]
 # -----------------------------------------------------------------------
 
 # ローカル開発環境で利用するホットリロード環境
-FROM golang:1.19 as dev
+FROM golang:1.20.3-alpine3.17 as dev
 
 ENV TZ /usr/share/zoneinfo/Asia/Tokyo
 
